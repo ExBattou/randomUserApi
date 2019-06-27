@@ -21,13 +21,15 @@ import butterknife.BindView;
 public class UserDetailFragment extends Fragment {
 
     @BindView(R.id.username)
-    TextView username;
+    TextView username_tv;
     @BindView(R.id.first_name)
-    TextView firstname;
+    TextView firstname_tv;
     @BindView(R.id.last_name)
-    TextView lastname;
+    TextView lastname_tv;
+    @BindView(R.id.email)
+    TextView email_tv;
     @BindView(R.id.user_image)
-    ImageView userImage;
+    ImageView userImage_iv;
 
     Context context;
 
@@ -37,6 +39,12 @@ public class UserDetailFragment extends Fragment {
     private static final String LAST_NAME = "lastname";
     private static final String EMAIL_ADDRESS = "email";
     private static final String USER_IMAGE_URL = "userimageurl";
+
+    private String username;
+    private String firstname;
+    private String lastname;
+    private String email;
+    private String userimageurl;
 
     public static UserDetailFragment newInstance(String username,
                                                  String firstname,
@@ -57,13 +65,27 @@ public class UserDetailFragment extends Fragment {
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            username = getArguments().getString(USERNAME);
+            lastname = getArguments().getString(LAST_NAME);
+            firstname = getArguments().getString(FIRST_NAME);
+            email = getArguments().getString(EMAIL_ADDRESS);
+            userimageurl = getArguments().getString(USER_IMAGE_URL);
+        }
+    }
+
+    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view,savedInstanceState);
         this.context = getContext();
-        username.setText(getArguments().get(USERNAME).toString());
-        firstname.setText(getArguments().get(FIRST_NAME).toString());
-        lastname.setText(getArguments().get(LAST_NAME).toString());
-        getImageFromUrl(getArguments().get(USER_IMAGE_URL).toString(),userImage);
+        username_tv.setText(username);
+        firstname_tv.setText(firstname);
+        lastname_tv.setText(lastname);
+        email_tv.setText(email);
+
+        getImageFromUrl(userimageurl,userImage_iv);
     }
 
 

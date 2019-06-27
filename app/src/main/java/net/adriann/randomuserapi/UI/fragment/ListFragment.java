@@ -4,26 +4,32 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
+
+import com.google.android.material.snackbar.Snackbar;
 
 import net.adriann.randomuserapi.R;
+import net.adriann.randomuserapi.adapter.UserAdapter;
+import net.adriann.randomuserapi.model.Response;
+import net.adriann.randomuserapi.service.RandomService;
+
+import butterknife.BindView;
+import io.reactivex.annotations.Nullable;
+import retrofit2.Call;
+import retrofit2.Callback;
 
 public class ListFragment extends Fragment {
 
-
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    @BindView(R.id.recycler_list)
+    RecyclerView recyclerView;
+    UserAdapter adapter;
 
     private OnFragmentInteractionListener mListener;
 
@@ -31,20 +37,9 @@ public class ListFragment extends Fragment {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ListFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static ListFragment newInstance(String param1, String param2) {
         ListFragment fragment = new ListFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -52,10 +47,7 @@ public class ListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+
     }
 
     @Override
@@ -84,6 +76,12 @@ public class ListFragment extends Fragment {
     }
 
     @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        populateList();
+
+    }
+
+    @Override
     public void onDetach() {
         super.onDetach();
         mListener = null;
@@ -102,5 +100,29 @@ public class ListFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    public void populateList(){
+        RandomService.getInstance()
+                .getRandomUseApi()
+                .get1User()
+                .enqueue(new Callback<Response>() {
+                    @Override
+                    public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
+                        adapter = new UserAdapter(response.body());
+                        Snackbar.make(getView(),"Loading list...",Snackbar.LENGTH_LONG);
+                    }
+                    @Override
+                    public void onFailure(Call<Response> call, Throwable t) {
+                        Toast.makeText(getContext(),"Aw Geez, Rick! something went wrong and the list won´t Load!",Toast.LENGTH_LONG);
+                    }
+                });
+
+    }
+
+    public void setRecyclerWithAdapter(Response r){
+        adapter = new UserAdapter(r);
+        recyclerView.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
     }
 }
