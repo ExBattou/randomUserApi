@@ -4,12 +4,16 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.fragment.app.ListFragment;
+
 
 import android.os.Bundle;
 import android.widget.FrameLayout;
+import android.widget.Toast;
+
+import com.google.android.material.snackbar.Snackbar;
 
 import net.adriann.randomuserapi.R;
+import net.adriann.randomuserapi.UI.fragment.ListFragment;
 import net.adriann.randomuserapi.UI.fragment.UserDetailFragment;
 
 import butterknife.BindView;
@@ -17,8 +21,10 @@ import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String BACK_STACK_ROOT_TAG = "USER_STACK";
     @BindView(R.id.fragment_container)
     FrameLayout fragmentContainer;
+
 
     ListFragment userListFragment;
     UserDetailFragment userDetailFragment;
@@ -29,20 +35,27 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        
+
+        setUpListFragment();
     }
 
-    public void switchFragments(@NonNull Fragment fragment, String tag) {
-        FragmentTransaction t = getSupportFragmentManager().beginTransaction();
-        t.replace(R.id.fragment_container,fragment,tag);
-        t.commit();
+    public void switchFragments(@NonNull Fragment fragment) {
+//        FragmentTransaction t = getSupportFragmentManager().beginTransaction();
+//        t.replace(R.id.fragment_container,fragment);
+//        t.commit();
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container,fragment)
+                .addToBackStack(BACK_STACK_ROOT_TAG)
+                .commit();
     }
 
     public void setUpListFragment() {
-        if (userListFragment != null) {
-            userListFragment = new ListFragment();
+        if (userListFragment == null) {
+            userListFragment = ListFragment.newInstance();
+            switchFragments(userListFragment);
+            Toast.makeText(this,"loading Fragment",Toast.LENGTH_LONG);
         }
-        switchFragments(userListFragment,userListFragment.getTag());
+
 
     }
 
@@ -52,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
                                   String email,
                                   String imageUrl){
         Fragment fragment = UserDetailFragment.newInstance(username,firstname,lastname,email,imageUrl);
-        switchFragments( fragment,fragment.getTag());
+        switchFragments(fragment);
 
     }
 

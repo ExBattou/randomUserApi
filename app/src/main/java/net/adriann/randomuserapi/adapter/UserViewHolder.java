@@ -14,11 +14,13 @@ import butterknife.ButterKnife;
 public class UserViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
     @BindView(R.id.user_image)
-    ImageView userImage;
+    public ImageView userImage;
 
     public UserViewHolder(@NonNull View itemView) {
         super(itemView);
-        ButterKnife.bind(this.itemView);
+
+        ButterKnife.bind(this,itemView);
+
         itemView.setOnClickListener(this);
     }
 
