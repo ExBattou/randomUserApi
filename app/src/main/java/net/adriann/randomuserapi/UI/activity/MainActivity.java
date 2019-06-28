@@ -3,23 +3,21 @@ package net.adriann.randomuserapi.UI.activity;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 
 
 import android.os.Bundle;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
-import com.google.android.material.snackbar.Snackbar;
-
 import net.adriann.randomuserapi.R;
 import net.adriann.randomuserapi.UI.fragment.ListFragment;
 import net.adriann.randomuserapi.UI.fragment.UserDetailFragment;
+import net.adriann.randomuserapi.adapter.UserAdapter;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements UserAdapter.Callback {
 
     private static final String BACK_STACK_ROOT_TAG = "USER_STACK";
     @BindView(R.id.fragment_container)
@@ -40,9 +38,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void switchFragments(@NonNull Fragment fragment) {
-//        FragmentTransaction t = getSupportFragmentManager().beginTransaction();
-//        t.replace(R.id.fragment_container,fragment);
-//        t.commit();
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragment_container,fragment)
                 .addToBackStack(BACK_STACK_ROOT_TAG)
@@ -55,8 +50,6 @@ public class MainActivity extends AppCompatActivity {
             switchFragments(userListFragment);
             Toast.makeText(this,"loading Fragment",Toast.LENGTH_LONG);
         }
-
-
     }
 
     public void setUpUserFragment(String username,
@@ -69,4 +62,9 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
+    @Override
+    public void onDudeClicked(String username, String first, String last, String email, String picurl) {
+        setUpUserFragment(username,first,last,email,picurl);
+    }
 }

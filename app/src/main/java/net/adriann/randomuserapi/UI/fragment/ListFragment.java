@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.google.android.material.snackbar.Snackbar;
 
 import net.adriann.randomuserapi.R;
+import net.adriann.randomuserapi.UI.activity.MainActivity;
 import net.adriann.randomuserapi.adapter.UserAdapter;
 import net.adriann.randomuserapi.model.Response;
 import net.adriann.randomuserapi.service.RandomService;
@@ -28,7 +29,7 @@ import io.reactivex.annotations.Nullable;
 import retrofit2.Call;
 import retrofit2.Callback;
 
-public class ListFragment extends Fragment {
+public class ListFragment extends Fragment  {
 
     @BindView(R.id.recycler_list)
     public androidx.recyclerview.widget.RecyclerView recyclerView;
@@ -49,7 +50,6 @@ public class ListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @Override
@@ -63,14 +63,13 @@ public class ListFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view,savedInstanceState);
-
         populateList();
     }
 
     public void populateList(){
         RandomService.getInstance()
                 .getRandomUseApi()
-                .get1User()
+                .getUsers()
                 .enqueue(new Callback<Response>() {
                     @Override
                     public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
@@ -86,16 +85,18 @@ public class ListFragment extends Fragment {
     }
 
     public void setRecyclerWithAdapter(Response r){
-        //LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(),3,RecyclerView.VERTICAL,false);
 
         if (recyclerView == null ) {
             recyclerView = (RecyclerView) getActivity().findViewById(R.id.recycler_list);
         }
-
         recyclerView.setLayoutManager(gridLayoutManager);
-
-        adapter = new UserAdapter(r,getContext());
+        adapter = new UserAdapter(r, getContext(), new UserAdapter.Callback() {
+            @Override
+            public void onDudeClicked(String username, String first, String last, String email, String picUrl) {
+                ((MainActivity) getActivity()).setUpUserFragment(username,first,last,email,picUrl);
+            }
+        });
         setAdapter(adapter);
         adapter.notifyDataSetChanged();
     }
@@ -118,4 +119,5 @@ public class ListFragment extends Fragment {
             emptyState.setVisibility(View.GONE);
         }
     }
+
 }
