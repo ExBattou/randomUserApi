@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -35,6 +36,8 @@ public class ListFragment extends Fragment  {
     public androidx.recyclerview.widget.RecyclerView recyclerView;
     @BindView(R.id.empty_state)
     public ImageView emptyState;
+    @BindView(R.id.progress_che)
+    ProgressBar progressBar;
 
     public UserAdapter adapter;
 
@@ -63,6 +66,7 @@ public class ListFragment extends Fragment  {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view,savedInstanceState);
+        progressBar.setVisibility(View.VISIBLE);
         populateList();
     }
 
@@ -75,9 +79,11 @@ public class ListFragment extends Fragment  {
                     public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
                         Snackbar.make(getView(),"Loading list...",Snackbar.LENGTH_LONG);
                         setRecyclerWithAdapter(response.body());
+                        progressBar.setVisibility(View.GONE);
                     }
                     @Override
                     public void onFailure(Call<Response> call, Throwable t) {
+                        progressBar.setVisibility(View.GONE);
                         Toast.makeText(getContext(),"Aw Geez, Rick! something went wrong and the list won´t Load!",Toast.LENGTH_LONG);
                     }
                 });

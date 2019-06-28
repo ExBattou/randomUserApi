@@ -3,12 +3,10 @@ package net.adriann.randomuserapi.UI.activity;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-
-
+import androidx.fragment.app.FragmentTransaction;
 import android.os.Bundle;
 import android.widget.FrameLayout;
 import android.widget.Toast;
-
 import net.adriann.randomuserapi.R;
 import net.adriann.randomuserapi.UI.fragment.ListFragment;
 import net.adriann.randomuserapi.UI.fragment.UserDetailFragment;
@@ -38,10 +36,17 @@ public class MainActivity extends AppCompatActivity implements UserAdapter.Callb
     }
 
     public void switchFragments(@NonNull Fragment fragment) {
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container,fragment)
-                .addToBackStack(BACK_STACK_ROOT_TAG)
-                .commit();
+//        getSupportFragmentManager().beginTransaction()
+//                .replace(R.id.fragment_container,fragment)
+//                .addToBackStack(BACK_STACK_ROOT_TAG)
+//                .commit();
+
+
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.setCustomAnimations(android.R.anim.slide_in_left,android.R.anim.slide_out_right);
+        transaction.addToBackStack(null);
+        transaction.replace(R.id.fragment_container, fragment);
+        transaction.commit();
     }
 
     public void setUpListFragment() {
